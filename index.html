@@ -1,35 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js - Recorrido con Botones</title>
+    <title>AR.js - Maqueta Giratoria</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-      /* Diseño de los botones tipo control de videojuego */
+      /* Estilo de los botones de rotación */
       .panel-controles {
         position: absolute;
-        bottom: 30px;
+        bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 1000; /* Asegura que estén por encima de la cámara */
+        z-index: 1000;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-      }
-      .fila-botones {
-        display: flex;
-        gap: 5px;
+        gap: 20px;
       }
       .btn-ar {
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0, 0, 0, 0.8);
         color: white;
         border: 2px solid white;
-        padding: 15px 20px;
-        font-size: 18px;
+        padding: 15px 25px;
+        font-size: 20px;
         border-radius: 10px;
         font-weight: bold;
-        touch-action: manipulation; /* Evita el zoom al tocar rápido */
+        touch-action: manipulation;
+        cursor: pointer;
       }
       .btn-ar:active {
         background-color: white;
@@ -40,57 +35,46 @@
   <body style="margin: 0px; overflow: hidden;">
     
     <div class="panel-controles">
-      <button class="btn-ar" id="btn-adelante">⬆️</button>
-      <div class="fila-botones">
-        <button class="btn-ar" id="btn-izquierda">⬅️</button>
-        <button class="btn-ar" id="btn-atras">⬇️</button>
-        <button class="btn-ar" id="btn-derecha">➡️</button>
-      </div>
+      <button class="btn-ar" id="btn-izq">↺ Girar</button>
+      <button class="btn-ar" id="btn-der">↻ Girar</button>
     </div>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;">
       
       <a-marker preset="hiro">
-        <a-entity 
-          id="mi-casa"
-          gltf-model="url(Untitled.glb)" 
-          scale="0.02 0.02 0.02" 
-          position="0 0 0"
-          rotation="-90 0 0">
+        
+        <a-entity rotation="-90 0 0">
+          
+          <a-entity 
+            id="mi-casa"
+            gltf-model="url(Untitled.glb)" 
+            scale="0.02 0.02 0.02" 
+            position="0 0 0"
+            rotation="0 0 0">
+          </a-entity>
+          
         </a-entity>
+
       </a-marker>
       
       <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-      // Seleccionamos el modelo 3D
       const casa = document.querySelector('#mi-casa');
-      // Ajusta este valor si quieres que se mueva más rápido o más lento
-      const velocidad = 0.5; 
+      let anguloY = 0;
+      // Ajusta este número si quieres que gire más rápido o más lento por cada clic
+      const velocidadRotacion = 15; 
 
-      // Mover Adelante
-      document.querySelector('#btn-adelante').onclick = () => {
-        let pos = casa.getAttribute('position');
-        casa.setAttribute('position', {x: pos.x, y: pos.y + velocidad, z: pos.z});
-      };
-      
-      // Mover Atrás
-      document.querySelector('#btn-atras').onclick = () => {
-        let pos = casa.getAttribute('position');
-        casa.setAttribute('position', {x: pos.x, y: pos.y - velocidad, z: pos.z});
+      document.querySelector('#btn-izq').onclick = () => {
+        anguloY += velocidadRotacion;
+        // Solo rotamos en el eje Y (el eje vertical de la casa)
+        casa.setAttribute('rotation', `0 ${anguloY} 0`);
       };
 
-      // Mover Izquierda
-      document.querySelector('#btn-izquierda').onclick = () => {
-        let pos = casa.getAttribute('position');
-        casa.setAttribute('position', {x: pos.x - velocidad, y: pos.y, z: pos.z});
-      };
-
-      // Mover Derecha
-      document.querySelector('#btn-derecha').onclick = () => {
-        let pos = casa.getAttribute('position');
-        casa.setAttribute('position', {x: pos.x + velocidad, y: pos.y, z: pos.z});
+      document.querySelector('#btn-der').onclick = () => {
+        anguloY -= velocidadRotacion;
+        casa.setAttribute('rotation', `0 ${anguloY} 0`);
       };
     </script>
   </body>
