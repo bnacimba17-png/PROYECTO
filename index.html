@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js - Maqueta Interactiva</title>
+    <title>AR.js - Maqueta Interactiva Completa</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-      /* Contenedor principal de controles para alinear todo */
+      /* Contenedor principal de controles */
       .contenedor-controles {
         position: absolute;
         bottom: 20px;
@@ -27,8 +27,8 @@
         justify-content: center;
       }
 
-      /* Estilo del panel de rotación */
-      .panel-rotacion {
+      /* Paneles horizontales para zoom y rotación */
+      .panel-horizontal {
         display: flex;
         gap: 20px;
       }
@@ -53,12 +53,12 @@
         color: black;
       }
 
-      /* Botones de rotación más anchos */
-      .btn-girar {
+      /* Botones más anchos para texto */
+      .btn-ancho {
         padding: 10px 20px;
       }
 
-      /* Posiciones específicas de las flechas en la cuadrícula */
+      /* Posiciones específicas de las flechas */
       #btn-adelante { grid-column: 2; grid-row: 1; }
       #btn-izq-mov { grid-column: 1; grid-row: 2; }
       #btn-atras { grid-column: 2; grid-row: 2; }
@@ -76,9 +76,14 @@
         <button class="btn-ar" id="btn-der-mov">→</button>
       </div>
 
-      <div class="panel-rotacion">
-        <button class="btn-ar btn-girar" id="btn-izq">↺ Girar</button>
-        <button class="btn-ar btn-girar" id="btn-der">↻ Girar</button>
+      <div class="panel-horizontal">
+        <button class="btn-ar btn-ancho" id="btn-acercar">🔍 +</button>
+        <button class="btn-ar btn-ancho" id="btn-alejar">🔍 -</button>
+      </div>
+
+      <div class="panel-horizontal">
+        <button class="btn-ar btn-ancho" id="btn-izq">↺ Girar</button>
+        <button class="btn-ar btn-ancho" id="btn-der">↻ Girar</button>
       </div>
 
     </div>
@@ -114,8 +119,31 @@
       // Variables para el Movimiento
       let posX = 0;
       let posY = 0;
-      // Ajusta este número si quieres que se mueva más o menos distancia por clic
-      const pasoMovimiento = 0.1; 
+      const pasoMovimiento = 0.2; 
+
+      // Variables para el Zoom (Escala)
+      let escalaActual = 0.02; // Esta es la escala inicial que tenías
+      // Ajusta este número si quieres que el zoom sea más brusco o más suave
+      const pasoEscala = 0.005; 
+
+      // --- Lógica de Zoom ---
+      function actualizarEscala() {
+        // Evitamos que la escala llegue a cero o números negativos para que no desaparezca el modelo
+        if (escalaActual < 0.005) {
+            escalaActual = 0.005;
+        }
+        casa.setAttribute('scale', `${escalaActual} ${escalaActual} ${escalaActual}`);
+      }
+
+      document.querySelector('#btn-acercar').onclick = () => {
+        escalaActual += pasoEscala;
+        actualizarEscala();
+      };
+
+      document.querySelector('#btn-alejar').onclick = () => {
+        escalaActual -= pasoEscala;
+        actualizarEscala();
+      };
 
       // --- Lógica de Rotación ---
       document.querySelector('#btn-izq').onclick = () => {
@@ -130,7 +158,6 @@
 
       // --- Lógica de Movimiento ---
       function actualizarPosicion() {
-        // Actualizamos las coordenadas X (izquierda/derecha) e Y (adelante/atrás)
         casa.setAttribute('position', `${posX} ${posY} 0`);
       }
 
