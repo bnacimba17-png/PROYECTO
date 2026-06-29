@@ -1,42 +1,86 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js - Maqueta Giratoria</title>
+    <title>AR.js - Maqueta Interactiva</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-      /* Estilo de los botones de rotación */
-      .panel-controles {
+      /* Contenedor principal de controles para alinear todo */
+      .contenedor-controles {
         position: absolute;
-        bottom: 40px;
+        bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 1000;
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* Estilo del panel de flechas (D-Pad) */
+      .panel-movimiento {
+        display: grid;
+        grid-template-columns: repeat(3, 50px);
+        grid-template-rows: repeat(2, 50px);
+        gap: 8px;
+        justify-content: center;
+      }
+
+      /* Estilo del panel de rotación */
+      .panel-rotacion {
+        display: flex;
         gap: 20px;
       }
+
+      /* Estilo general de los botones */
       .btn-ar {
         background-color: rgba(0, 0, 0, 0.8);
         color: white;
         border: 2px solid white;
-        padding: 15px 25px;
         font-size: 20px;
         border-radius: 10px;
         font-weight: bold;
         touch-action: manipulation;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
+
       .btn-ar:active {
         background-color: white;
         color: black;
       }
+
+      /* Botones de rotación más anchos */
+      .btn-girar {
+        padding: 10px 20px;
+      }
+
+      /* Posiciones específicas de las flechas en la cuadrícula */
+      #btn-adelante { grid-column: 2; grid-row: 1; }
+      #btn-izq-mov { grid-column: 1; grid-row: 2; }
+      #btn-atras { grid-column: 2; grid-row: 2; }
+      #btn-der-mov { grid-column: 3; grid-row: 2; }
     </style>
   </head>
   <body style="margin: 0px; overflow: hidden;">
     
-    <div class="panel-controles">
-      <button class="btn-ar" id="btn-izq">↺ Girar</button>
-      <button class="btn-ar" id="btn-der">↻ Girar</button>
+    <div class="contenedor-controles">
+      
+      <div class="panel-movimiento">
+        <button class="btn-ar" id="btn-adelante">↑</button>
+        <button class="btn-ar" id="btn-izq-mov">←</button>
+        <button class="btn-ar" id="btn-atras">↓</button>
+        <button class="btn-ar" id="btn-der-mov">→</button>
+      </div>
+
+      <div class="panel-rotacion">
+        <button class="btn-ar btn-girar" id="btn-izq">↺ Girar</button>
+        <button class="btn-ar btn-girar" id="btn-der">↻ Girar</button>
+      </div>
+
     </div>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;">
@@ -47,7 +91,7 @@
           
           <a-entity 
             id="mi-casa"
-            gltf-model="url(Electrico.glb)" 
+            gltf-model="url(Estructural.glb)" 
             scale="0.02 0.02 0.02" 
             position="0 0 0"
             rotation="0 0 0">
@@ -62,19 +106,52 @@
 
     <script>
       const casa = document.querySelector('#mi-casa');
+      
+      // Variables para la Rotación
       let anguloY = 0;
-      // Ajusta este número si quieres que gire más rápido o más lento por cada clic
       const velocidadRotacion = 15; 
 
+      // Variables para el Movimiento
+      let posX = 0;
+      let posY = 0;
+      // Ajusta este número si quieres que se mueva más o menos distancia por clic
+      const pasoMovimiento = 0.5; 
+
+      // --- Lógica de Rotación ---
       document.querySelector('#btn-izq').onclick = () => {
         anguloY += velocidadRotacion;
-        // Solo rotamos en el eje Y (el eje vertical de la casa)
         casa.setAttribute('rotation', `0 ${anguloY} 0`);
       };
 
       document.querySelector('#btn-der').onclick = () => {
         anguloY -= velocidadRotacion;
         casa.setAttribute('rotation', `0 ${anguloY} 0`);
+      };
+
+      // --- Lógica de Movimiento ---
+      function actualizarPosicion() {
+        // Actualizamos las coordenadas X (izquierda/derecha) e Y (adelante/atrás)
+        casa.setAttribute('position', `${posX} ${posY} 0`);
+      }
+
+      document.querySelector('#btn-adelante').onclick = () => {
+        posY += pasoMovimiento;
+        actualizarPosicion();
+      };
+
+      document.querySelector('#btn-atras').onclick = () => {
+        posY -= pasoMovimiento;
+        actualizarPosicion();
+      };
+
+      document.querySelector('#btn-izq-mov').onclick = () => {
+        posX -= pasoMovimiento;
+        actualizarPosicion();
+      };
+
+      document.querySelector('#btn-der-mov').onclick = () => {
+        posX += pasoMovimiento;
+        actualizarPosicion();
       };
     </script>
   </body>
